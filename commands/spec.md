@@ -1,52 +1,48 @@
 ---
-description: Create a Polaris Spec — initializes polaris/ directory on first use, then runs the Clarity Gate interrogation (S1–S6) and writes a Spec file on a new feature branch.
+description: Create a Polaris Spec — selects a parent Goal, runs the Clarity Gate interrogation (S1–S6), and writes a Spec file on a new feature branch.
 ---
 
 # /spec
 
 You are executing the Polaris `/spec` slash command. Follow the procedure below exactly.
 
-## Step 1 — Check initialization
+## Step 1 — Preconditions
 
-Check whether `polaris/mission.md` exists in the current working directory.
+Check that `polaris/mission.md` exists in the current working directory.
 
-- If it exists, skip to Step 3.
-- If it does not exist, proceed to Step 2.
+- If it does not exist, halt. Tell the user: "This repository isn't set up for Polaris yet. Run `/init` first."
+- If it exists, proceed.
 
-## Step 2 — Initialize the repository (first-time setup)
+Read `polaris/mission.md`. You will reference its anti-strategy section during Step 5.
 
-Tell the user: "This repository doesn't have Polaris set up yet. I'll ask four questions to create `polaris/mission.md`, then we'll proceed with the Spec."
+## Step 2 — Goal selection (required)
 
-Ask these four questions, one at a time, waiting for each answer:
+Every Spec must declare which Goal it advances. List files in `polaris/goals/active/` (excluding `.gitkeep`).
 
-1. **Mission** — "In one sentence: what does this codebase exist to do?"
-2. **Anti-strategy** — "Name 2–4 things this codebase will explicitly never do, even when tempting. Be concrete (e.g., 'never add a billing module', not 'never compromise quality')."
-3. **Current phase** — "What phase is this repo in right now: Discovery, Build, Scale, or Sunset?"
-4. **Strategic owner** — "Who is responsible for strategic decisions here? (one human name)"
+### 2a. No active Goals
 
-Read the mission template at `${CLAUDE_PLUGIN_ROOT}/templates/mission.md` and fill it with the user's answers. Write the result to `polaris/mission.md` in the current repo.
+If the list is empty, tell the user:
 
-Create the spec state directories — each an empty `.gitkeep` to hold the directory in git:
+> No active Goals. Every Spec must link to a Goal so we can tell if work is converging on a target outcome. Let's create a Goal first.
 
-- `polaris/specs/planned/.gitkeep`
-- `polaris/specs/in-progress/.gitkeep`
-- `polaris/specs/done/.gitkeep`
-- `polaris/specs/canceled/.gitkeep`
+Run the `/goal` command's Step 2 through Step 5 inline — see `${CLAUDE_PLUGIN_ROOT}/commands/goal.md`. Skip `/goal`'s Step 1 (precondition already verified) and Step 6 (commit) — you will commit the Goal together with the Spec in Step 7 below. After the Goal is written, record its `{timestamp}-{slug}` identifier and continue to Step 3.
 
-The directory a Spec lives in *is* its status. There is no `status:` frontmatter field.
+### 2b. Active Goals exist
 
-Inject the Polaris CLAUDE.md snippet:
+Read the frontmatter and Goal title of each file in `polaris/goals/active/`. Present them to the user as a numbered list:
 
-- If `CLAUDE.md` does not exist at repo root, create it and write the contents of `${CLAUDE_PLUGIN_ROOT}/CLAUDE.md.snippet`.
-- If `CLAUDE.md` exists, check whether it contains the line `<!-- POLARIS-START`. If not, append the contents of `${CLAUDE_PLUGIN_ROOT}/CLAUDE.md.snippet` to the end of the file (with a blank line separator). If it does contain the marker, leave `CLAUDE.md` unchanged.
+> Which Goal does this Spec advance?
+> 1. {slug-1} — {one-line summary from G1}
+> 2. {slug-2} — {one-line summary from G1}
+> ...
+> Or: "none fit" to create a new Goal first.
 
-Confirm to the user: "Polaris initialized. Continuing with Spec creation."
+Wait for the user's choice.
 
-## Step 3 — Read the mission
+- If user picks a number: record the corresponding `{timestamp}-{slug}` as the parent Goal. Proceed to Step 3.
+- If user says "none fit" or similar: run the inline `/goal` flow from 2a, then proceed.
 
-Read `polaris/mission.md`. You will reference the anti-strategy section during Step 5.
-
-## Step 4 — Clarity Gate (S1–S6)
+## Step 3 — Clarity Gate (S1–S6)
 
 Ask the user each of the following questions, one at a time. After each answer, score it using the rubric and reflect your scoring back to the user. If the score is WEAK or FAIL, explain why and offer the user a chance to refine their answer. Accept whatever they land on (refinement is optional).
 
@@ -77,11 +73,11 @@ Rubric:
 - **FAIL**: "nothing else is excluded" / refuses to draw a boundary.
 
 ### S4 — Why now
-Ask: "Why does this happen now rather than next week or next month?"
+Ask: "Why does this happen now rather than next week or next month? How does it advance the parent Goal specifically?"
 
 Rubric:
-- **PASS**: unblocks something, deadline, degrading condition, or directly advances the repo's current phase per `polaris/mission.md`.
-- **WEAK**: "it's convenient."
+- **PASS**: unblocks something, deadline, degrading condition, or names a specific way it advances the parent Goal's G1 target outcome.
+- **WEAK**: "it's convenient" or gestures at the Goal without explaining the link.
 - **FAIL**: no reason beyond preference.
 
 ### S5 — User / consumer
@@ -99,6 +95,18 @@ Rubric:
 - **PASS**: names a falsifiable assumption with real stakes.
 - **WEAK**: names a risk but not a falsifiable assumption.
 - **FAIL**: "nothing could go wrong."
+
+## Step 4 — Goal-Spec alignment check
+
+Re-read the parent Goal's G1 target outcome and G3 ("not this") sections. Verify:
+
+- S1 (what changes) plausibly contributes to the Goal's G1 target outcome.
+- S1 does not fall inside the Goal's G3 excluded territory.
+
+If either check fails:
+- Tell the user exactly which alignment is broken.
+- Offer: (a) revise the Spec to fit the Goal, (b) pick a different Goal, or (c) create a new Goal.
+- Do not silently proceed.
 
 ## Step 5 — Anti-strategy check
 
@@ -122,6 +130,7 @@ File path: `polaris/specs/planned/{timestamp}-{slug}.md`
 Read the Spec template at `${CLAUDE_PLUGIN_ROOT}/templates/spec.md`. Fill it:
 - Frontmatter:
   - `id: {timestamp}`
+  - `goal: {parent-goal-timestamp-slug}` — required; the identifier from Step 2
   - `branch: feat/{timestamp}`
   - `created: {YYYY-MM-DD today}`
   - `weak_dimensions: [...]` — list the S-dimensions that scored WEAK or FAIL (e.g., `[S3, S5]`). Empty list if all PASS.
@@ -136,16 +145,28 @@ Run:
 ```bash
 git checkout -b feat/{timestamp}
 git add polaris/specs/planned/{timestamp}-{slug}.md
+```
+
+If Step 2a ran (a new Goal was created inline), also stage it:
+
+```bash
+git add polaris/goals/active/{goal-timestamp}-{goal-slug}.md
+```
+
+Then commit:
+
+```bash
 git commit -m "spec: {slug}"
 ```
 
-(If Step 2 ran, also stage `polaris/mission.md`, the four `polaris/specs/{planned,in-progress,done,canceled}/.gitkeep` files, and `CLAUDE.md` changes, and include them in the first commit on the new branch.)
+(If a new Goal was created, the commit message is: `spec: {slug} (+goal: {goal-slug})`.)
 
 ## Step 8 — Confirm
 
 Tell the user:
 
 > Spec created: `polaris/specs/planned/{timestamp}-{slug}.md`
+> Parent Goal: `{goal-slug}`
 > Branch: `feat/{timestamp}` (checked out)
 > Weak dimensions: `{list or "none"}`
 >

@@ -1,6 +1,7 @@
 ---
 type: spec
 id: <!-- unix timestamp -->
+goal: <!-- {goal-timestamp}-{goal-slug}, required — links to polaris/goals/active/ -->
 branch: feat/<!-- unix timestamp -->
 created: <!-- YYYY-MM-DD -->
 weak_dimensions: []

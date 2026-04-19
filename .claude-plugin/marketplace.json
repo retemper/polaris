@@ -10,14 +10,14 @@
     {
       "name": "polaris",
       "source": "./",
-      "description": "Strategy-as-code for Claude Code. Enforces mission, anti-strategy, and Spec creation via Clarity Gate interrogation.",
+      "description": "Strategy-as-code for Claude Code. 3-layer model (Mission, Goals, Specs): every Spec links to a parent Goal, every Goal connects to Mission, Clarity Gate interrogation on each layer.",
       "author": {
         "name": "retemper"
       },
       "homepage": "https://github.com/retemper/polaris",
       "repository": "https://github.com/retemper/polaris",
       "license": "MIT",
-      "keywords": ["strategy", "spec", "planning", "governance", "anti-strategy"],
+      "keywords": ["strategy", "spec", "goal", "planning", "governance", "anti-strategy"],
       "category": "productivity"
     }
   ]

@@ -4,7 +4,8 @@
 This repository uses [Polaris](https://github.com/retemper/polaris) — strategy-as-code for AI agents. The rules below govern your behavior in this repository.
 
 **Before proposing any non-trivial code change:**
-- Read `polaris/mission.md`. Internalize the anti-strategy items and current phase.
+- Read `polaris/mission.md`. Internalize the anti-strategy items, the current phase, and the riskiest strategic assumption.
+- List `polaris/goals/active/` and read the frontmatter of each active Goal. These are the outcomes the repo is currently converging on.
 - Scan `polaris/specs/in-progress/` and `polaris/specs/planned/` for a Spec that covers the proposed work.
 
 **When no Spec covers the proposed work:**
@@ -13,6 +14,7 @@ This repository uses [Polaris](https://github.com/retemper/polaris) — strategy
 
 **When a Spec exists for this work:**
 - Stay within the scope declared in S1 (what changes) and S3 (out of scope).
+- The Spec's `goal:` frontmatter field names its parent Goal in `polaris/goals/active/`. Verify the work still advances that Goal's G1 target outcome — if it drifts, raise it.
 - If the work requires expanding scope, stop and ask the user to amend the Spec.
 
 **If the proposed change conflicts with an anti-strategy item in `polaris/mission.md`:**
@@ -20,16 +22,22 @@ This repository uses [Polaris](https://github.com/retemper/polaris) — strategy
 - Do not silently proceed. The user must either cancel the change or explicitly amend `polaris/mission.md`.
 
 **Never:**
-- Trust metadata over filesystem reality. The directory a Spec lives in IS its status — `planned/`, `in-progress/`, `done/`, or `canceled/`. No `status:` field overrides this.
-- Move Spec files across status directories or rewrite `polaris/mission.md` without the user's explicit request.
+- Trust metadata over filesystem reality. The directory a Spec or Goal lives in IS its status — `planned/` `in-progress/` `done/` `canceled/` for Specs, `active/` `achieved/` `abandoned/` for Goals. No `status:` field overrides this.
+- Move Spec or Goal files across status directories, or rewrite `polaris/mission.md`, without the user's explicit request.
+- Create a Spec without a parent Goal. Every Spec must link to an active Goal via its `goal:` frontmatter field.
 
 **Directory layout (strategic context):**
-- `polaris/mission.md` — mission, anti-strategy, current phase
+- `polaris/mission.md` — mission, anti-strategy, current phase, riskiest strategic assumption
+- `polaris/goals/active/` — outcomes currently being pursued
+- `polaris/goals/achieved/` — outcomes that have been observed (historical reference; `Outcome notes` section filled)
+- `polaris/goals/abandoned/` — outcomes no longer being pursued, with reason recorded
 - `polaris/specs/planned/` — Specs not yet started
 - `polaris/specs/in-progress/` — active work
 - `polaris/specs/done/` — completed (historical reference)
 - `polaris/specs/canceled/` — canceled with reason recorded in the Spec
 
 **Slash commands (from the Polaris plugin):**
-- `/spec` — create a new Spec with Clarity Gate interrogation
+- `/init` — one-time setup: interview for mission, anti-strategy, phase, and 2-3 initial Goals
+- `/goal` — add a new Goal (G1–G4 interrogation)
+- `/spec` — create a new Spec under a parent Goal (Clarity Gate S1–S6)
 <!-- POLARIS-END -->

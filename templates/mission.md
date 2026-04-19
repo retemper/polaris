@@ -22,3 +22,7 @@ Things this codebase will explicitly *never* do, even when tempting. Concrete bo
 **<!-- Discovery | Build | Scale | Sunset -->**
 
 <!-- One paragraph: what this phase means for this codebase right now. What kinds of work fit this phase, what kinds don't. -->
+
+# Riskiest strategic assumption
+
+<!-- The single belief underlying this Mission that, if wrong, makes the project itself misguided. A falsifiable claim, not a worry. -->
