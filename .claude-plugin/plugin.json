@@ -1,0 +1,11 @@
+{
+  "name": "polaris",
+  "version": "0.0.1",
+  "description": "Strategy-as-code layer for Claude Code. Enforces that AI agents consult the repository's mission and anti-strategy before proposing changes, and requires a Spec created via Clarity Gate interrogation before non-trivial work.",
+  "author": {
+    "name": "retemper"
+  },
+  "repository": "https://github.com/retemper/polaris",
+  "license": "MIT",
+  "keywords": ["strategy", "spec", "planning", "governance", "anti-strategy"]
+}

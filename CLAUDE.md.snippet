@@ -1,0 +1,35 @@
+<!-- POLARIS-START (do not edit between markers; managed by Polaris) -->
+## Polaris
+
+This repository uses [Polaris](https://github.com/retemper/polaris) — strategy-as-code for AI agents. The rules below govern your behavior in this repository.
+
+**Before proposing any non-trivial code change:**
+- Read `polaris/mission.md`. Internalize the anti-strategy items and current phase.
+- Scan `polaris/specs/in-progress/` and `polaris/specs/planned/` for a Spec that covers the proposed work.
+
+**When no Spec covers the proposed work:**
+- Run `/spec` to create one. Do not write implementation code until the Spec exists on disk.
+- One-line fixes and obvious chores can bypass Spec creation, but you must say so explicitly in chat before acting.
+
+**When a Spec exists for this work:**
+- Stay within the scope declared in S1 (what changes) and S3 (out of scope).
+- If the work requires expanding scope, stop and ask the user to amend the Spec.
+
+**If the proposed change conflicts with an anti-strategy item in `polaris/mission.md`:**
+- Halt. Name the specific item being violated and raise the conflict with the user.
+- Do not silently proceed. The user must either cancel the change or explicitly amend `polaris/mission.md`.
+
+**Never:**
+- Trust metadata over filesystem reality. The directory a Spec lives in IS its status — `planned/`, `in-progress/`, `done/`, or `canceled/`. No `status:` field overrides this.
+- Move Spec files across status directories or rewrite `polaris/mission.md` without the user's explicit request.
+
+**Directory layout (strategic context):**
+- `polaris/mission.md` — mission, anti-strategy, current phase
+- `polaris/specs/planned/` — Specs not yet started
+- `polaris/specs/in-progress/` — active work
+- `polaris/specs/done/` — completed (historical reference)
+- `polaris/specs/canceled/` — canceled with reason recorded in the Spec
+
+**Slash commands (from the Polaris plugin):**
+- `/spec` — create a new Spec with Clarity Gate interrogation
+<!-- POLARIS-END -->
