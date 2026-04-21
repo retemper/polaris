@@ -28,6 +28,8 @@ Command files reference the plugin root via `${CLAUDE_PLUGIN_ROOT}`:
 
 - `${CLAUDE_PLUGIN_ROOT}/templates/spec.md`
 - `${CLAUDE_PLUGIN_ROOT}/templates/mission.md`
+- `${CLAUDE_PLUGIN_ROOT}/templates/philosophy.md`
+- `${CLAUDE_PLUGIN_ROOT}/templates/goal.md`
 - `${CLAUDE_PLUGIN_ROOT}/CLAUDE.md.snippet`
 
 Never hardcode absolute paths. Never assume the plugin is cloned to a specific directory — it could be installed anywhere by the marketplace mechanism.
@@ -41,8 +43,10 @@ These are not style preferences; they are the mental model the plugin teaches. V
 - **Trigger-action rule structure in `CLAUDE.md.snippet`.** Rules use "Before / When / If / Never" headings. AI agents follow trigger-action better than descriptive prose. Keep new rules in the same form.
 - **PASS / WEAK / FAIL rubrics in Clarity Gate.** Each S1–S6 question has a rubric. The `weak_dimensions` frontmatter field records which scored WEAK/FAIL so retros can later find systemically weak Specs. Do not remove rubrics or soften scoring language without understanding this feedback loop.
 - **v0.1.0 intentional minimality.** Deferred features (Initiative layer, `/retro`, `/archaeology`, programmatic anti-strategy hooks, installer script) are listed in the README under "What's NOT in v0.1.0". If a requested change expands beyond the current scope, surface that to the user before implementing.
-- **Three commands, one bootstrap.** `/init` is the only command that creates `polaris/`. `/goal` and `/spec` both require `polaris/mission.md` to exist and halt with instructions to run `/init` otherwise. Keep this invariant — it is what makes "is this repo set up?" an unambiguous question.
+- **Four commands, one bootstrap.** `/init` is the only command that creates `polaris/`. `/philosophy`, `/goal`, and `/spec` all require `polaris/mission.md` to exist and halt with instructions to run `/init` otherwise. Keep this invariant — it is what makes "is this repo set up?" an unambiguous question.
 - **Every Spec has a parent Goal.** The `goal:` frontmatter field on each Spec is required, not optional. `/spec` enforces this by running `/goal` inline when no active Goals exist. Do not loosen this constraint without understanding that it is the mechanism by which Specs stay convergent on Mission-level outcomes.
+- **Philosophy is invariant by design.** `polaris/philosophy.md` has no state directories (no `active/` / `archived/`) and no lifecycle. Principles are identity-level commitments that constrain every Goal and Spec. If a principle needs to change, that is a strategic amendment, not a routine update. Do not add lifecycle mechanics to Philosophy — the invariance IS the point.
+- **Philosophy is optional at the consumer layer.** `polaris/philosophy.md` may not exist in a user's repo (e.g., if they ran `/init` before v0.1.0 and haven't run `/philosophy` yet, or if they skipped Part C). `/goal` and `/spec` Philosophy-alignment checks must handle the absent-file case by skipping, never by halting.
 
 ## When editing commands
 
@@ -65,6 +69,7 @@ This repository uses [Polaris](https://github.com/retemper/polaris) — strategy
 
 **Before proposing any non-trivial code change:**
 - Read `polaris/mission.md`. Internalize the anti-strategy items, the current phase, and the riskiest strategic assumption.
+- Read `polaris/philosophy.md` if present. These principles are invariant across Goal changes — every proposal must respect them.
 - List `polaris/goals/active/` and read the frontmatter of each active Goal. These are the outcomes the repo is currently converging on.
 - Scan `polaris/specs/in-progress/` and `polaris/specs/planned/` for a Spec that covers the proposed work.
 
@@ -77,17 +82,19 @@ This repository uses [Polaris](https://github.com/retemper/polaris) — strategy
 - The Spec's `goal:` frontmatter field names its parent Goal in `polaris/goals/active/`. Verify the work still advances that Goal's G1 target outcome — if it drifts, raise it.
 - If the work requires expanding scope, stop and ask the user to amend the Spec.
 
-**If the proposed change conflicts with an anti-strategy item in `polaris/mission.md`:**
-- Halt. Name the specific item being violated and raise the conflict with the user.
-- Do not silently proceed. The user must either cancel the change or explicitly amend `polaris/mission.md`.
+**If the proposed change conflicts with an anti-strategy item in `polaris/mission.md` or a principle in `polaris/philosophy.md`:**
+- Halt. Name the specific item or principle being violated and raise the conflict with the user.
+- Do not silently proceed. The user must either cancel the change or explicitly amend the conflicting file.
 
 **Never:**
 - Trust metadata over filesystem reality. The directory a Spec or Goal lives in IS its status — `planned/` `in-progress/` `done/` `canceled/` for Specs, `active/` `achieved/` `abandoned/` for Goals. No `status:` field overrides this.
-- Move Spec or Goal files across status directories, or rewrite `polaris/mission.md`, without the user's explicit request.
+- Move Spec or Goal files across status directories, or rewrite `polaris/mission.md` or `polaris/philosophy.md`, without the user's explicit request.
 - Create a Spec without a parent Goal. Every Spec must link to an active Goal via its `goal:` frontmatter field.
+- Treat Philosophy principles as aspirational. If a principle exists in `polaris/philosophy.md`, violating it is a strategic decision that requires explicit user amendment, not silent deviation.
 
 **Directory layout (strategic context):**
 - `polaris/mission.md` — mission, anti-strategy, current phase, riskiest strategic assumption
+- `polaris/philosophy.md` — principles invariant across Goal changes (identity-level commitments); may not exist if the user hasn't defined any
 - `polaris/goals/active/` — outcomes currently being pursued
 - `polaris/goals/achieved/` — outcomes that have been observed (historical reference; `Outcome notes` section filled)
 - `polaris/goals/abandoned/` — outcomes no longer being pursued, with reason recorded
@@ -97,7 +104,8 @@ This repository uses [Polaris](https://github.com/retemper/polaris) — strategy
 - `polaris/specs/canceled/` — canceled with reason recorded in the Spec
 
 **Slash commands (from the Polaris plugin):**
-- `/init` — one-time setup: interview for mission, anti-strategy, phase, and 2-3 initial Goals
+- `/init` — one-time setup: interview for mission, anti-strategy, phase, philosophy, and 2-3 initial Goals
+- `/philosophy` — add a new Philosophy principle (P1–P3 interrogation)
 - `/goal` — add a new Goal (G1–G4 interrogation)
 - `/spec` — create a new Spec under a parent Goal (Clarity Gate S1–S6)
 <!-- POLARIS-END -->

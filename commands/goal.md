@@ -72,7 +72,20 @@ If you find a violation:
 
 If no violation, proceed.
 
-## Step 5 — Write the Goal
+## Step 5 — Philosophy alignment check
+
+If `polaris/philosophy.md` exists, read it. For each principle, verify:
+
+- Achieving this Goal's G1 target outcome does not require violating the principle.
+- This Goal's G3 excluded territory does not directly contradict the principle.
+
+If you find a conflict:
+- Halt. Tell the user exactly which Philosophy principle conflicts with this Goal and how (e.g., "achieving G1 would require {action} which violates principle '{slug}'").
+- The user must either (a) cancel the Goal, (b) revise G1/G3 so it no longer conflicts, or (c) revise the conflicting principle via `/philosophy` (or by editing `polaris/philosophy.md` directly). Amending is a strategic decision — do not do it silently.
+
+If no violation, proceed. If `polaris/philosophy.md` does not exist, skip this step — Philosophy is optional and may not have been defined yet.
+
+## Step 6 — Write the Goal
 
 Generate:
 - `timestamp` — Unix epoch seconds, from `date +%s`.
@@ -92,7 +105,7 @@ Read the Goal template at `${CLAUDE_PLUGIN_ROOT}/templates/goal.md`. Fill it:
 
 Write the file.
 
-## Step 6 — Commit
+## Step 7 — Commit
 
 Stage and commit only the new Goal file on the current branch:
 
@@ -103,7 +116,7 @@ git commit -m "goal: {slug}"
 
 Do not create a branch. Goals are not PR-sized units; they accumulate on whatever branch the user is on. If the user is in the middle of Spec work on a feature branch, the Goal will travel with that branch — surface this to the user if it matters.
 
-## Step 7 — Confirm
+## Step 8 — Confirm
 
 Tell the user:
 
@@ -114,4 +127,4 @@ Tell the user:
 
 ## Note on inline use from /spec
 
-When `/spec` invokes this command inline (because no active Goal exists or none fit), skip Step 1's halt — `/spec` has already verified the precondition. Skip Step 6's commit — `/spec` will stage and commit the Goal together with the new Spec. Return to `/spec` after Step 5 with the new Goal's `{timestamp}-{slug}` identifier.
+When `/spec` invokes this command inline (because no active Goal exists or none fit), skip Step 1's halt — `/spec` has already verified the precondition. Skip Step 7's commit — `/spec` will stage and commit the Goal together with the new Spec. Return to `/spec` after Step 6 with the new Goal's `{timestamp}-{slug}` identifier.

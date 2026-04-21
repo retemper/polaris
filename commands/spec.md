@@ -25,7 +25,7 @@ If the list is empty, tell the user:
 
 > No active Goals. Every Spec must link to a Goal so we can tell if work is converging on a target outcome. Let's create a Goal first.
 
-Run the `/goal` command's Step 2 through Step 5 inline — see `${CLAUDE_PLUGIN_ROOT}/commands/goal.md`. Skip `/goal`'s Step 1 (precondition already verified) and Step 6 (commit) — you will commit the Goal together with the Spec in Step 7 below. After the Goal is written, record its `{timestamp}-{slug}` identifier and continue to Step 3.
+Run the `/goal` command's Step 2 through Step 6 inline — see `${CLAUDE_PLUGIN_ROOT}/commands/goal.md`. Skip `/goal`'s Step 1 (precondition already verified) and Step 7 (commit) — you will commit the Goal together with the Spec in Step 8 below. After the Goal is written, record its `{timestamp}-{slug}` identifier and continue to Step 3.
 
 ### 2b. Active Goals exist
 
@@ -117,7 +117,17 @@ For each item in the anti-strategy section of `polaris/mission.md`, ask yourself
 
 If no violation, proceed.
 
-## Step 6 — Write the Spec
+## Step 6 — Philosophy alignment check
+
+If `polaris/philosophy.md` exists, read each principle. For each principle, ask yourself whether this Spec — specifically its S1 (what changes) — would violate the principle.
+
+If you find a conflict:
+- Halt. Tell the user exactly which Philosophy principle the Spec violates and how (e.g., "the file-layout change in S1 would require {action} which violates principle '{slug}': {statement}").
+- The user must either (a) cancel the Spec, (b) revise S1/S3 so it no longer conflicts, or (c) revise the conflicting principle via `/philosophy` (or by editing `polaris/philosophy.md` directly). Amending is a strategic decision — do not do it silently.
+
+If no violation, proceed. If `polaris/philosophy.md` does not exist, skip this step — Philosophy is optional and may not have been defined yet.
+
+## Step 7 — Write the Spec
 
 Generate:
 - `timestamp` — Unix epoch seconds, from `date +%s`.
@@ -138,7 +148,7 @@ Read the Spec template at `${CLAUDE_PLUGIN_ROOT}/templates/spec.md`. Fill it:
 
 Write the file.
 
-## Step 7 — Create the branch
+## Step 8 — Create the branch
 
 Run:
 
@@ -161,7 +171,7 @@ git commit -m "spec: {slug}"
 
 (If a new Goal was created, the commit message is: `spec: {slug} (+goal: {goal-slug})`.)
 
-## Step 8 — Confirm
+## Step 9 — Confirm
 
 Tell the user:
 
