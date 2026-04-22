@@ -1,0 +1,11 @@
+{
+  "name": "polaris",
+  "version": "0.1.0",
+  "description": "Strategy-as-code layer for Claude Code. Enforces a 4-layer model — Mission, Philosophy, Goals, Specs — plus a lightweight Issues log, so AI agents consult strategic context, respect invariant principles, and link every PR-sized change to a parent outcome before writing code.",
+  "author": {
+    "name": "retemper"
+  },
+  "repository": "https://github.com/retemper/polaris",
+  "license": "MIT",
+  "keywords": ["strategy", "spec", "goal", "philosophy", "issue", "planning", "governance", "anti-strategy"]
+}
