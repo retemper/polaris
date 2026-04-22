@@ -23,6 +23,10 @@ This repository uses [Polaris](https://github.com/retemper/polaris) — strategy
 - If the Spec's `related_issues:` lists any Issues, they live in `polaris/issues/open/`. Resolving the Spec closes those Issues (`git mv` to `polaris/issues/closed/` and fill `Resolution notes`).
 - If the work requires expanding scope, stop and ask the user to amend the Spec.
 
+**When the user expresses disorientation or asks an open-ended navigation question:**
+- Signal examples: "what should I do next", "where are we", "what's in progress", "뭐 해야지", "지금 뭐가 필요해", "어디까지 했지".
+- Suggest `/polaris` — it reads current filesystem state and proposes concrete next moves. Do not improvise an answer from memory of the codebase state.
+
 **If the proposed change conflicts with an anti-strategy item in `polaris/mission.md` or a principle in `polaris/philosophy.md`:**
 - Halt. Name the specific item or principle being violated and raise the conflict with the user.
 - Do not silently proceed. The user must either cancel the change or explicitly amend the conflicting file.
@@ -53,4 +57,5 @@ This repository uses [Polaris](https://github.com/retemper/polaris) — strategy
 - `/goal` — add a new Goal (G1–G4 interrogation)
 - `/spec` — create a new Spec under a parent Goal (Clarity Gate S1–S6)
 - `/issue` — file a bug / incident / observation report (structural, no scoring)
+- `/polaris` — compass: read current state and propose next moves (use when disoriented; accepts optional context arg)
 <!-- POLARIS-END -->

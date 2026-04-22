@@ -2,7 +2,7 @@
 
 > Strategy-as-code for Claude Code. AI agents should know *why* — not just what and how.
 
-**v0.1.0 — Mission + Philosophy + Goals + Specs + Issues, delivered as a Claude Code plugin.**
+**v0.2.0 — Mission + Philosophy + Goals + Specs + Issues + `/polaris` compass, delivered as a Claude Code plugin.**
 
 ## What it does
 
@@ -45,9 +45,10 @@ In any repository, in Claude Code:
 /goal         # add a new goal later
 /spec         # create a spec under an active goal
 /issue        # file a bug / incident / observation report
+/polaris      # compass — shows current state and next moves (use when lost)
 ```
 
-(Namespaced as `/polaris:init`, `/polaris:philosophy`, `/polaris:goal`, `/polaris:spec`, `/polaris:issue` if another plugin defines the same names.)
+(Namespaced as `/polaris:init`, `/polaris:philosophy`, `/polaris:goal`, `/polaris:spec`, `/polaris:issue`, `/polaris:polaris` if another plugin defines the same names.)
 
 ### First-time flow
 
@@ -74,6 +75,12 @@ In any repository, in Claude Code:
 3. Writes `polaris/issues/open/{unix-timestamp}-{slug}.md`. When a later Spec addresses the Issue, `/spec` records it via the Spec's `related_issues:` frontmatter (Spec-side is canonical — the Issue does not store its Spec).
 4. Close the Issue (`git mv` to `polaris/issues/closed/` and fill `Resolution notes`) when it is resolved by a Spec, declared wontfix, duplicate, or obsolete.
 
+### Getting oriented (`/polaris`)
+
+When you sit down and don't know what to work on, type `/polaris`. It reads the filesystem state — phase, active Goals, in-progress Specs, planned Specs, open Issues, Philosophy — and prints a compact summary plus 1–3 concrete next moves (each pointing at an exact command or shell action, not abstract advice). It is read-only; it does not modify files or execute suggestions.
+
+Pass optional context to get tailored advice: `/polaris test 실패 중`, `/polaris 어디까지 했지`. The compass stays grounded in filesystem state — it won't fabricate Specs or Goals that don't exist.
+
 ### Life cycle
 
 - **Philosophy:** invariant by design. No state transitions — if a principle changes, it's a strategic amendment, not a routine update.
@@ -95,7 +102,8 @@ polaris/
 │   ├── philosophy.md             /philosophy — add a Philosophy principle
 │   ├── goal.md                   /goal — add a Goal
 │   ├── spec.md                   /spec — create a Spec under a Goal
-│   └── issue.md                  /issue — file a bug / incident / observation report
+│   ├── issue.md                  /issue — file a bug / incident / observation report
+│   └── polaris.md                /polaris — compass: state summary + next moves
 ├── templates/
 │   ├── mission.md                mission template
 │   ├── philosophy.md             philosophy template
