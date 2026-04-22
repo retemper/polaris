@@ -16,15 +16,24 @@ Polaris makes a repository's strategy (mission, anti-strategy, phase, invariant 
 
 A `CLAUDE.md` rule (auto-injected on first use) ensures Claude Code consults the strategic layers before any non-trivial change, halts on Philosophy or anti-strategy violations, and requires a Spec-under-a-Goal before implementation.
 
-## Install (dev / local)
+## Install
 
-For now, install via `--plugin-dir` (session-scoped):
+In Claude Code:
+
+```
+/plugin marketplace add retemper/polaris
+/plugin install polaris@retemper
+```
+
+See [Claude Code plugin docs](https://code.claude.com/docs/en/plugins-reference) for details.
+
+## Developing Polaris locally
+
+Clone the repo and run Claude Code with `--plugin-dir` to load the plugin from a working copy (session-scoped):
 
 ```bash
 claude --plugin-dir /path/to/polaris
 ```
-
-Or clone and enable persistently through your settings. See [Claude Code plugin docs](https://code.claude.com/docs/en/plugins-reference) for marketplace installation.
 
 ## Use
 
