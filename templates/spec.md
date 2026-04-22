@@ -2,10 +2,20 @@
 type: spec
 id: <!-- unix timestamp -->
 goal: <!-- {goal-timestamp}-{goal-slug}, required — links to polaris/goals/active/ -->
+related_issues: []
 branch: feat/<!-- unix timestamp -->
 created: <!-- YYYY-MM-DD -->
 weak_dimensions: []
 ---
+
+<!--
+related_issues: optional list of {issue-timestamp}-{issue-slug} identifiers
+from polaris/issues/open/. Spec-side is the canonical source for the
+Spec↔Issue link — Issues do not store their Specs. Leave empty if the
+Spec is not addressing any open Issue.
+-->
+
+
 
 # <slug>
 

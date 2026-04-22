@@ -13,7 +13,7 @@ Check that `polaris/mission.md` exists in the current working directory.
 - If it does not exist, halt. Tell the user: "This repository isn't set up for Polaris yet. Run `/init` first."
 - If it exists, proceed.
 
-Read `polaris/mission.md`. You will reference its anti-strategy section during Step 5.
+Read `polaris/mission.md`. You will reference its anti-strategy section during Step 6.
 
 ## Step 2 — Goal selection (required)
 
@@ -25,7 +25,7 @@ If the list is empty, tell the user:
 
 > No active Goals. Every Spec must link to a Goal so we can tell if work is converging on a target outcome. Let's create a Goal first.
 
-Run the `/goal` command's Step 2 through Step 6 inline — see `${CLAUDE_PLUGIN_ROOT}/commands/goal.md`. Skip `/goal`'s Step 1 (precondition already verified) and Step 7 (commit) — you will commit the Goal together with the Spec in Step 8 below. After the Goal is written, record its `{timestamp}-{slug}` identifier and continue to Step 3.
+Run the `/goal` command's Step 2 through Step 6 inline — see `${CLAUDE_PLUGIN_ROOT}/commands/goal.md`. Skip `/goal`'s Step 1 (precondition already verified) and Step 7 (commit) — you will commit the Goal together with the Spec in Step 9 below. After the Goal is written, record its `{timestamp}-{slug}` identifier and continue to Step 3.
 
 ### 2b. Active Goals exist
 
@@ -42,7 +42,32 @@ Wait for the user's choice.
 - If user picks a number: record the corresponding `{timestamp}-{slug}` as the parent Goal. Proceed to Step 3.
 - If user says "none fit" or similar: run the inline `/goal` flow from 2a, then proceed.
 
-## Step 3 — Clarity Gate (S1–S6)
+## Step 3 — Issue linkage (optional)
+
+Related Issues are recorded on the Spec side — Issues do not store their Specs. List files in `polaris/issues/open/` (excluding `.gitkeep`).
+
+### 3a. No open Issues or directory missing
+
+If the directory does not exist or is empty, skip this step (leave `related_issues` empty).
+
+### 3b. Open Issues exist
+
+Read the frontmatter and Issue title of each file in `polaris/issues/open/`. Present them to the user as a numbered list:
+
+> Does this Spec address any open Issue(s)? (optional, multi-select)
+> 1. {slug-1} — {one-line summary from I1}
+> 2. {slug-2} — {one-line summary from I1}
+> ...
+> Or: "none" to skip.
+
+Wait for the user's response.
+
+- If the user picks one or more numbers (e.g. `1, 3` or `1 and 3`): record the corresponding `{timestamp}-{slug}` identifiers as `related_issues`.
+- If the user says "none" or similar: leave `related_issues` empty.
+
+Proceed to Step 4.
+
+## Step 4 — Clarity Gate (S1–S6)
 
 Ask the user each of the following questions, one at a time. After each answer, score it using the rubric and reflect your scoring back to the user. If the score is WEAK or FAIL, explain why and offer the user a chance to refine their answer. Accept whatever they land on (refinement is optional).
 
@@ -96,7 +121,7 @@ Rubric:
 - **WEAK**: names a risk but not a falsifiable assumption.
 - **FAIL**: "nothing could go wrong."
 
-## Step 4 — Goal-Spec alignment check
+## Step 5 — Goal-Spec alignment check
 
 Re-read the parent Goal's G1 target outcome and G3 ("not this") sections. Verify:
 
@@ -108,7 +133,7 @@ If either check fails:
 - Offer: (a) revise the Spec to fit the Goal, (b) pick a different Goal, or (c) create a new Goal.
 - Do not silently proceed.
 
-## Step 5 — Anti-strategy check
+## Step 6 — Anti-strategy check
 
 For each item in the anti-strategy section of `polaris/mission.md`, ask yourself whether this Spec violates it. If you find a violation:
 
@@ -117,7 +142,7 @@ For each item in the anti-strategy section of `polaris/mission.md`, ask yourself
 
 If no violation, proceed.
 
-## Step 6 — Philosophy alignment check
+## Step 7 — Philosophy alignment check
 
 If `polaris/philosophy.md` exists, read each principle. For each principle, ask yourself whether this Spec — specifically its S1 (what changes) — would violate the principle.
 
@@ -127,7 +152,7 @@ If you find a conflict:
 
 If no violation, proceed. If `polaris/philosophy.md` does not exist, skip this step — Philosophy is optional and may not have been defined yet.
 
-## Step 7 — Write the Spec
+## Step 8 — Write the Spec
 
 Generate:
 - `timestamp` — Unix epoch seconds, from `date +%s`.
@@ -141,6 +166,7 @@ Read the Spec template at `${CLAUDE_PLUGIN_ROOT}/templates/spec.md`. Fill it:
 - Frontmatter:
   - `id: {timestamp}`
   - `goal: {parent-goal-timestamp-slug}` — required; the identifier from Step 2
+  - `related_issues: [...]` — list the `{issue-timestamp}-{issue-slug}` identifiers selected in Step 3. Empty list if none.
   - `branch: feat/{timestamp}`
   - `created: {YYYY-MM-DD today}`
   - `weak_dimensions: [...]` — list the S-dimensions that scored WEAK or FAIL (e.g., `[S3, S5]`). Empty list if all PASS.
@@ -148,7 +174,7 @@ Read the Spec template at `${CLAUDE_PLUGIN_ROOT}/templates/spec.md`. Fill it:
 
 Write the file.
 
-## Step 8 — Create the branch
+## Step 9 — Create the branch
 
 Run:
 
@@ -171,7 +197,7 @@ git commit -m "spec: {slug}"
 
 (If a new Goal was created, the commit message is: `spec: {slug} (+goal: {goal-slug})`.)
 
-## Step 9 — Confirm
+## Step 10 — Confirm
 
 Tell the user:
 

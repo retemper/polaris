@@ -10,14 +10,14 @@
     {
       "name": "polaris",
       "source": "./",
-      "description": "Strategy-as-code for Claude Code. 4-layer model (Mission, Philosophy, Goals, Specs): every Spec links to a parent Goal, every Goal connects to Mission, Philosophy principles stay invariant across Goal changes, Clarity Gate interrogation on each layer.",
+      "description": "Strategy-as-code for Claude Code. 4-layer model (Mission, Philosophy, Goals, Specs) plus a lightweight Issues log: every Spec links to a parent Goal, every Goal connects to Mission, Philosophy principles stay invariant across Goal changes, Clarity Gate interrogation on each strategic layer.",
       "author": {
         "name": "retemper"
       },
       "homepage": "https://github.com/retemper/polaris",
       "repository": "https://github.com/retemper/polaris",
       "license": "MIT",
-      "keywords": ["strategy", "spec", "goal", "philosophy", "planning", "governance", "anti-strategy"],
+      "keywords": ["strategy", "spec", "goal", "philosophy", "issue", "planning", "governance", "anti-strategy"],
       "category": "productivity"
     }
   ]

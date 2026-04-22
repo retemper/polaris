@@ -177,6 +177,8 @@ Read templates and write:
    - `polaris/goals/active/.gitkeep`
    - `polaris/goals/achieved/.gitkeep`
    - `polaris/goals/abandoned/.gitkeep`
+   - `polaris/issues/open/.gitkeep`
+   - `polaris/issues/closed/.gitkeep`
 
 4. **Each Goal** — read `${CLAUDE_PLUGIN_ROOT}/templates/goal.md`, fill with G1–G4 answers and `weak_dimensions`, write to `polaris/goals/active/{timestamp}-{slug}.md`.
 

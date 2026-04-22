@@ -2,7 +2,7 @@
 
 > Strategy-as-code for Claude Code. AI agents should know *why* — not just what and how.
 
-**v0.1.0 — Mission + Philosophy + Goals + Specs, delivered as a Claude Code plugin.**
+**v0.1.0 — Mission + Philosophy + Goals + Specs + Issues, delivered as a Claude Code plugin.**
 
 ## What it does
 
@@ -12,8 +12,9 @@ Polaris makes a repository's strategy (mission, anti-strategy, phase, invariant 
 - `polaris/philosophy.md` — principles invariant across Goal changes (identity-level commitments; 3–5 recommended)
 - `polaris/goals/active/` — outcomes the repo is currently converging on (2–3 recommended, up to ~5 before focus dilutes)
 - `polaris/specs/` — PR-sized units of work, each linked to a parent Goal, created via Clarity Gate interrogation
+- `polaris/issues/` — lightweight bug / incident / observation reports (no scoring; Specs link to Issues they address, never the other way around)
 
-A `CLAUDE.md` rule (auto-injected on first use) ensures Claude Code consults all four layers before any non-trivial change, halts on Philosophy or anti-strategy violations, and requires a Spec-under-a-Goal before implementation.
+A `CLAUDE.md` rule (auto-injected on first use) ensures Claude Code consults the strategic layers before any non-trivial change, halts on Philosophy or anti-strategy violations, and requires a Spec-under-a-Goal before implementation.
 
 ## Install (dev / local)
 
@@ -34,9 +35,10 @@ In any repository, in Claude Code:
 /philosophy   # add a new Philosophy principle later
 /goal         # add a new goal later
 /spec         # create a spec under an active goal
+/issue        # file a bug / incident / observation report
 ```
 
-(Namespaced as `/polaris:init`, `/polaris:philosophy`, `/polaris:goal`, `/polaris:spec` if another plugin defines the same names.)
+(Namespaced as `/polaris:init`, `/polaris:philosophy`, `/polaris:goal`, `/polaris:spec`, `/polaris:issue` if another plugin defines the same names.)
 
 ### First-time flow
 
@@ -54,15 +56,23 @@ In any repository, in Claude Code:
 3. Goal–Spec alignment check: verifies the Spec converges on the Goal's G1 and doesn't fall inside its G3 exclusion.
 4. Anti-strategy check against the Mission.
 5. Philosophy alignment check against each principle in `polaris/philosophy.md` (if present).
-6. On pass: writes `polaris/specs/planned/{unix-timestamp}-{slug}.md` with a `goal:` frontmatter link, checks out `feat/{unix-timestamp}`. Move the file to `in-progress/`, `done/`, or `canceled/` as state changes — the directory IS the status.
+6. On pass: writes `polaris/specs/planned/{unix-timestamp}-{slug}.md` with a `goal:` frontmatter link (and `related_issues:` if any were selected during Goal selection), checks out `feat/{unix-timestamp}`. Move the file to `in-progress/`, `done/`, or `canceled/` as state changes — the directory IS the status.
+
+### Filing an Issue
+
+1. `/issue` collects four plain fields: What, When, Reproduction, Impact. No PASS/WEAK/FAIL — Issues are operational reports, not strategic commitments. Structure is the quality gate.
+2. Optional Goal link. No branch is created; the Issue commits on whatever branch the user is on.
+3. Writes `polaris/issues/open/{unix-timestamp}-{slug}.md`. When a later Spec addresses the Issue, `/spec` records it via the Spec's `related_issues:` frontmatter (Spec-side is canonical — the Issue does not store its Spec).
+4. Close the Issue (`git mv` to `polaris/issues/closed/` and fill `Resolution notes`) when it is resolved by a Spec, declared wontfix, duplicate, or obsolete.
 
 ### Life cycle
 
 - **Philosophy:** invariant by design. No state transitions — if a principle changes, it's a strategic amendment, not a routine update.
 - **Goals:** `active/` → `achieved/` (target outcome observed, fill `Outcome notes`) or `abandoned/` (direction no longer right).
 - **Specs:** `planned/` → `in-progress/` → `done/` (fill `Implementation notes`) or `canceled/`.
+- **Issues:** `open/` → `closed/` (fill `Resolution notes`).
 
-All transitions (for Goals and Specs) are `git mv` — there is no `status:` field to update. The filesystem is the source of truth.
+All transitions (for Goals, Specs, and Issues) are `git mv` — there is no `status:` field to update. The filesystem is the source of truth.
 
 ## Layout (this repo)
 
@@ -75,12 +85,14 @@ polaris/
 │   ├── init.md                   /init — setup interview
 │   ├── philosophy.md             /philosophy — add a Philosophy principle
 │   ├── goal.md                   /goal — add a Goal
-│   └── spec.md                   /spec — create a Spec under a Goal
+│   ├── spec.md                   /spec — create a Spec under a Goal
+│   └── issue.md                  /issue — file a bug / incident / observation report
 ├── templates/
 │   ├── mission.md                mission template
 │   ├── philosophy.md             philosophy template
 │   ├── goal.md                   goal template
-│   └── spec.md                   spec template
+│   ├── spec.md                   spec template
+│   └── issue.md                  issue template
 ├── CLAUDE.md.snippet             injected into target repo's CLAUDE.md
 ├── CLAUDE.md                     guidance for Claude Code working on this plugin
 ├── LICENSE
