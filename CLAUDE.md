@@ -50,6 +50,7 @@ These are not style preferences; they are the mental model the plugin teaches. V
 - **Philosophy is optional at the consumer layer.** `polaris/philosophy.md` may not exist in a user's repo (e.g., if they ran `/init` before v0.1.0 and haven't run `/philosophy` yet, or if they skipped Part C). `/goal` and `/spec` Philosophy-alignment checks must handle the absent-file case by skipping, never by halting.
 - **Issues intentionally break the Clarity-Gate-everywhere pattern.** Mission, Philosophy, Goals, and Specs are strategic commitments, so each runs through a PASS/WEAK/FAIL rubric (B-, P-, G-, S-). Issues are *operational reports* — observations of reality, not commitments about the future. They collect What / When / Reproduction / Impact with no scoring; the template structure is the quality gate. Do not add a scoring rubric to `/issue` or `templates/issue.md` without understanding that the no-scoring design is the line between "strategic artifact" and "operational log".
 - **Spec → Issue is one-way canonical.** The Spec's `related_issues:` frontmatter is where Spec↔Issue links live. Issues do not carry a `related_specs:` field. This avoids bi-directional drift — the Spec edits itself when linking, nothing has to edit the Issue. Resist any proposal to add `related_specs:` to Issues "for symmetry"; grep-from-Spec-side is the query.
+- **Spec hierarchy via subfolder, never frontmatter.** When a Spec has children, the parent's full slug becomes a group folder under `polaris/specs/{status}/` and children live as sibling files inside (the parent itself is `{parent-slug}/{parent-slug}.md`). Children diverge in status freely — the same group folder appears under multiple status dirs. There is no `parent_spec:` or `children:` field; `git mv` is the only attach/detach/reparent mechanism. This is filesystem-as-source-of-truth applied to the hierarchy axis, just as directory-as-status applies it to the lifecycle axis. Resist any proposal to add hierarchy metadata "for query convenience" — `find polaris/specs -path "*/{parent-slug}/*"` is the query.
 
 ## When editing commands
 
@@ -90,6 +91,16 @@ This repository uses [Polaris](https://github.com/retemper/polaris) — strategy
 - If the Spec's `related_issues:` lists any Issues, they live in `polaris/issues/open/`. Resolving the Spec closes those Issues (`git mv` to `polaris/issues/closed/` and fill `Resolution notes`).
 - If the work requires expanding scope, stop and ask the user to amend the Spec.
 
+**When the proposed work spans multiple Specs (umbrella effort):**
+- Each piece is its own Spec under the umbrella's group folder. Hierarchy is filesystem-only: the parent's full slug is a folder under `polaris/specs/{status}/`; the parent file is `{parent-slug}/{parent-slug}.md`; children live as sibling files inside.
+- Children's statuses diverge freely from the parent's — the same group folder appears under multiple status dirs (e.g., `polaris/specs/in-progress/{parent-slug}/` for in-flight pieces, `polaris/specs/done/{parent-slug}/` for completed pieces).
+- To find every Spec in a group: `find polaris/specs -path "*/{parent-slug}/*"`.
+- To attach a Spec to a parent or change its parent: `git mv` only. There is no `parent_spec:` frontmatter field — `/spec` asks "Is this Spec part of a larger Spec?" during creation, and any later restructuring is a manual `git mv`.
+
+**When the user expresses disorientation or asks an open-ended navigation question:**
+- Signal examples: "what should I do next", "where are we", "what's in progress", "뭐 해야지", "지금 뭐가 필요해", "어디까지 했지".
+- Suggest `/polaris` — it reads current filesystem state and proposes concrete next moves. Do not improvise an answer from memory of the codebase state.
+
 **If the proposed change conflicts with an anti-strategy item in `polaris/mission.md` or a principle in `polaris/philosophy.md`:**
 - Halt. Name the specific item or principle being violated and raise the conflict with the user.
 - Do not silently proceed. The user must either cancel the change or explicitly amend the conflicting file.
@@ -100,6 +111,7 @@ This repository uses [Polaris](https://github.com/retemper/polaris) — strategy
 - Create a Spec without a parent Goal. Every Spec must link to an active Goal via its `goal:` frontmatter field.
 - Treat Philosophy principles as aspirational. If a principle exists in `polaris/philosophy.md`, violating it is a strategic decision that requires explicit user amendment, not silent deviation.
 - Store Spec references on Issues. The Spec's `related_issues:` frontmatter is the canonical direction for the Spec↔Issue link. Issues do not carry a `related_specs:` field.
+- Add a `parent_spec:`, `children:`, or any similar field to record Spec hierarchy. The folder structure under `polaris/specs/{status}/{parent-slug}/` is canonical; `git mv` is the only attach/detach/reparent mechanism.
 
 **Directory layout (strategic context):**
 - `polaris/mission.md` — mission, anti-strategy, current phase, riskiest strategic assumption
@@ -111,6 +123,7 @@ This repository uses [Polaris](https://github.com/retemper/polaris) — strategy
 - `polaris/specs/in-progress/` — active work
 - `polaris/specs/done/` — completed (historical reference)
 - `polaris/specs/canceled/` — canceled with reason recorded in the Spec
+- `polaris/specs/{status}/{parent-slug}/` — when a Spec has children, it becomes a group folder under its status dir. Parent file: `{parent-slug}/{parent-slug}.md`. Children: sibling files in the same folder. Each Spec's status is independent, so the same group folder may appear under multiple status dirs.
 - `polaris/issues/open/` — bug / incident / observation reports not yet resolved
 - `polaris/issues/closed/` — resolved, wontfix, duplicate, or obsolete Issues with `Resolution notes` filled
 
@@ -120,4 +133,5 @@ This repository uses [Polaris](https://github.com/retemper/polaris) — strategy
 - `/goal` — add a new Goal (G1–G4 interrogation)
 - `/spec` — create a new Spec under a parent Goal (Clarity Gate S1–S6)
 - `/issue` — file a bug / incident / observation report (structural, no scoring)
+- `/polaris` — compass: read current state and propose next moves (use when disoriented; accepts optional context arg)
 <!-- POLARIS-END -->

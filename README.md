@@ -2,7 +2,7 @@
 
 > Strategy-as-code for Claude Code. AI agents should know *why* — not just what and how.
 
-**v0.2.0 — Mission + Philosophy + Goals + Specs + Issues + `/polaris` compass, delivered as a Claude Code plugin.**
+**v0.3.0 — Mission + Philosophy + Goals + Specs (optionally grouped via folder hierarchy) + Issues + `/polaris` compass, delivered as a Claude Code plugin.**
 
 ## What it does
 
@@ -62,11 +62,12 @@ In any repository, in Claude Code:
 ### Creating a Spec
 
 1. `/spec` lists your active Goals and asks which one this Spec advances. If none fit, it runs `/goal` inline first.
-2. Clarity Gate interrogation: S1–S6 (what changes, done criteria, out of scope, why now, user, riskiest assumption) with PASS/WEAK/FAIL scoring.
-3. Goal–Spec alignment check: verifies the Spec converges on the Goal's G1 and doesn't fall inside its G3 exclusion.
-4. Anti-strategy check against the Mission.
-5. Philosophy alignment check against each principle in `polaris/philosophy.md` (if present).
-6. On pass: writes `polaris/specs/planned/{unix-timestamp}-{slug}.md` with a `goal:` frontmatter link (and `related_issues:` if any were selected during Goal selection), checks out `feat/{unix-timestamp}`. Move the file to `in-progress/`, `done/`, or `canceled/` as state changes — the directory IS the status.
+2. Optional parent Spec selection: `/spec` asks "Is this Spec part of a larger Spec?" and lists candidate parents from `planned/` and `in-progress/`. Picking a parent places the new Spec inside the parent's group folder (`polaris/specs/planned/{parent-slug}/`); migrating a flat parent into a group folder is automatic. There is no `parent_spec:` frontmatter — folder layout is canonical, and any later restructuring is a manual `git mv`.
+3. Clarity Gate interrogation: S1–S6 (what changes, done criteria, out of scope, why now, user, riskiest assumption) with PASS/WEAK/FAIL scoring.
+4. Goal–Spec alignment check: verifies the Spec converges on the Goal's G1 and doesn't fall inside its G3 exclusion.
+5. Anti-strategy check against the Mission.
+6. Philosophy alignment check against each principle in `polaris/philosophy.md` (if present).
+7. On pass: writes the Spec to `polaris/specs/planned/{unix-timestamp}-{slug}.md` (or `polaris/specs/planned/{parent-slug}/{unix-timestamp}-{slug}.md` if a parent was selected) with a `goal:` frontmatter link (and `related_issues:` if any were selected during Goal selection), checks out `feat/{unix-timestamp}`. Move the file to `in-progress/`, `done/`, or `canceled/` as state changes — the directory IS the status, applied per-Spec, so children may diverge from their parent's status freely.
 
 ### Filing an Issue
 
@@ -116,7 +117,7 @@ polaris/
 └── README.md
 ```
 
-## What's NOT in v0.1.0
+## What's NOT in v0.3.0
 
 - Initiative layer (deferred — if Goals prove to need a middle aggregator, we'll add it)
 - `/retro` — done-Spec lessons-learned ritual that feeds back into mission.md (planned next)

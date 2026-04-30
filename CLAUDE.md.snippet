@@ -23,6 +23,12 @@ This repository uses [Polaris](https://github.com/retemper/polaris) — strategy
 - If the Spec's `related_issues:` lists any Issues, they live in `polaris/issues/open/`. Resolving the Spec closes those Issues (`git mv` to `polaris/issues/closed/` and fill `Resolution notes`).
 - If the work requires expanding scope, stop and ask the user to amend the Spec.
 
+**When the proposed work spans multiple Specs (umbrella effort):**
+- Each piece is its own Spec under the umbrella's group folder. Hierarchy is filesystem-only: the parent's full slug is a folder under `polaris/specs/{status}/`; the parent file is `{parent-slug}/{parent-slug}.md`; children live as sibling files inside.
+- Children's statuses diverge freely from the parent's — the same group folder appears under multiple status dirs (e.g., `polaris/specs/in-progress/{parent-slug}/` for in-flight pieces, `polaris/specs/done/{parent-slug}/` for completed pieces).
+- To find every Spec in a group: `find polaris/specs -path "*/{parent-slug}/*"`.
+- To attach a Spec to a parent or change its parent: `git mv` only. There is no `parent_spec:` frontmatter field — `/spec` asks "Is this Spec part of a larger Spec?" during creation, and any later restructuring is a manual `git mv`.
+
 **When the user expresses disorientation or asks an open-ended navigation question:**
 - Signal examples: "what should I do next", "where are we", "what's in progress", "뭐 해야지", "지금 뭐가 필요해", "어디까지 했지".
 - Suggest `/polaris` — it reads current filesystem state and proposes concrete next moves. Do not improvise an answer from memory of the codebase state.
@@ -37,6 +43,7 @@ This repository uses [Polaris](https://github.com/retemper/polaris) — strategy
 - Create a Spec without a parent Goal. Every Spec must link to an active Goal via its `goal:` frontmatter field.
 - Treat Philosophy principles as aspirational. If a principle exists in `polaris/philosophy.md`, violating it is a strategic decision that requires explicit user amendment, not silent deviation.
 - Store Spec references on Issues. The Spec's `related_issues:` frontmatter is the canonical direction for the Spec↔Issue link. Issues do not carry a `related_specs:` field.
+- Add a `parent_spec:`, `children:`, or any similar field to record Spec hierarchy. The folder structure under `polaris/specs/{status}/{parent-slug}/` is canonical; `git mv` is the only attach/detach/reparent mechanism.
 
 **Directory layout (strategic context):**
 - `polaris/mission.md` — mission, anti-strategy, current phase, riskiest strategic assumption
@@ -48,6 +55,7 @@ This repository uses [Polaris](https://github.com/retemper/polaris) — strategy
 - `polaris/specs/in-progress/` — active work
 - `polaris/specs/done/` — completed (historical reference)
 - `polaris/specs/canceled/` — canceled with reason recorded in the Spec
+- `polaris/specs/{status}/{parent-slug}/` — when a Spec has children, it becomes a group folder under its status dir. Parent file: `{parent-slug}/{parent-slug}.md`. Children: sibling files in the same folder. Each Spec's status is independent, so the same group folder may appear under multiple status dirs.
 - `polaris/issues/open/` — bug / incident / observation reports not yet resolved
 - `polaris/issues/closed/` — resolved, wontfix, duplicate, or obsolete Issues with `Resolution notes` filled
 
