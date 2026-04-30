@@ -13,7 +13,7 @@ Check that `polaris/mission.md` exists in the current working directory.
 - If it does not exist, halt. Tell the user: "This repository isn't set up for Polaris yet. Run `/init` first."
 - If it exists, proceed.
 
-Read `polaris/mission.md`. You will reference its anti-strategy section during Step 6.
+Read `polaris/mission.md`. You will reference its anti-strategy section during Step 7.
 
 ## Step 2 — Goal selection (required)
 
@@ -25,7 +25,7 @@ If the list is empty, tell the user:
 
 > No active Goals. Every Spec must link to a Goal so we can tell if work is converging on a target outcome. Let's create a Goal first.
 
-Run the `/goal` command's Step 2 through Step 6 inline — see `${CLAUDE_PLUGIN_ROOT}/commands/goal.md`. Skip `/goal`'s Step 1 (precondition already verified) and Step 7 (commit) — you will commit the Goal together with the Spec in Step 9 below. After the Goal is written, record its `{timestamp}-{slug}` identifier and continue to Step 3.
+Run the `/goal` command's Step 2 through Step 6 inline — see `${CLAUDE_PLUGIN_ROOT}/commands/goal.md`. Skip `/goal`'s Step 1 (precondition already verified) and Step 7 (commit) — you will commit the Goal together with the Spec in Step 10 below. After the Goal is written, record its `{timestamp}-{slug}` identifier and continue to Step 3.
 
 ### 2b. Active Goals exist
 
@@ -67,7 +67,38 @@ Wait for the user's response.
 
 Proceed to Step 4.
 
-## Step 4 — Clarity Gate (S1–S6)
+## Step 4 — Parent Spec selection (optional)
+
+A Spec can be a child of a larger umbrella Spec. Hierarchy is expressed in the **filesystem only** — the parent's full slug becomes a group folder under `polaris/specs/{status}/`, and child Specs live inside as sibling files. There is no `parent_spec:` frontmatter field; `git mv` is the only attachment mechanism. When child statuses diverge from the parent, the same group folder appears under multiple status directories (e.g., `polaris/specs/in-progress/{parent-slug}/` for the parent and in-flight children, `polaris/specs/done/{parent-slug}/` for completed children).
+
+### 4a. Enumerate candidates
+
+List every entry directly under `polaris/specs/planned/` and `polaris/specs/in-progress/` (excluding `.gitkeep`). Skip `done/` and `canceled/` — adding children to a finished parent is exceptional and should be done manually if needed.
+
+For each entry:
+- A flat `.md` file (e.g., `polaris/specs/in-progress/1776869476-polaris-compass.md`): candidate parent. Identifier = filename without `.md` (e.g., `1776869476-polaris-compass`). Status = the directory it lives in.
+- A directory (e.g., `polaris/specs/in-progress/1776869476-polaris-compass/`): existing parent group. The parent file inside is `{dir-basename}/{dir-basename}.md`. Identifier = directory basename. Status = the directory the group folder lives in.
+
+For each candidate, read its `## What changes (S1)` section and extract a one-line summary.
+
+### 4b. Ask the user
+
+If the candidate list is empty, skip to Step 5 — this is necessarily a flat Spec.
+
+Otherwise, present:
+
+> Is this Spec part of a larger Spec? (optional)
+> 1. {parent-full-slug-1} — {one-line S1 summary}
+> 2. {parent-full-slug-2} — {one-line S1 summary}
+> ...
+> Or: "no" to keep it flat.
+
+Wait for the user's response.
+
+- "no" / "none" / similar: record `parent = null`. Proceed to Step 5.
+- A number: record `parent = {parent-full-slug}` and `parent_status` = the status directory the parent currently lives in (`planned` or `in-progress`). Also record whether the parent is currently flat (`.md` file) or already a group folder. Proceed to Step 5.
+
+## Step 5 — Clarity Gate (S1–S6)
 
 Ask the user each of the following questions, one at a time. After each answer, score it using the rubric and reflect your scoring back to the user. If the score is WEAK or FAIL, explain why and offer the user a chance to refine their answer. Accept whatever they land on (refinement is optional).
 
@@ -121,7 +152,7 @@ Rubric:
 - **WEAK**: names a risk but not a falsifiable assumption.
 - **FAIL**: "nothing could go wrong."
 
-## Step 5 — Goal-Spec alignment check
+## Step 6 — Goal-Spec alignment check
 
 Re-read the parent Goal's G1 target outcome and G3 ("not this") sections. Verify:
 
@@ -133,7 +164,7 @@ If either check fails:
 - Offer: (a) revise the Spec to fit the Goal, (b) pick a different Goal, or (c) create a new Goal.
 - Do not silently proceed.
 
-## Step 6 — Anti-strategy check
+## Step 7 — Anti-strategy check
 
 For each item in the anti-strategy section of `polaris/mission.md`, ask yourself whether this Spec violates it. If you find a violation:
 
@@ -142,7 +173,7 @@ For each item in the anti-strategy section of `polaris/mission.md`, ask yourself
 
 If no violation, proceed.
 
-## Step 7 — Philosophy alignment check
+## Step 8 — Philosophy alignment check
 
 If `polaris/philosophy.md` exists, read each principle. For each principle, ask yourself whether this Spec — specifically its S1 (what changes) — would violate the principle.
 
@@ -152,15 +183,34 @@ If you find a conflict:
 
 If no violation, proceed. If `polaris/philosophy.md` does not exist, skip this step — Philosophy is optional and may not have been defined yet.
 
-## Step 8 — Write the Spec
+## Step 9 — Write the Spec
 
 Generate:
 - `timestamp` — Unix epoch seconds, from `date +%s`.
 - `slug` — kebab-case, 2–5 words capturing the Spec's subject, derived from S1.
 
-File path: `polaris/specs/planned/{timestamp}-{slug}.md`
+Determine the file path based on whether a parent was selected in Step 4:
 
-(New Specs always land in `planned/`. When the user starts implementation they move the file to `in-progress/`, and to `done/` or `canceled/` when finished. The directory IS the status.)
+**No parent selected:** `polaris/specs/planned/{timestamp}-{slug}.md` — the existing flat path.
+
+**Parent selected:** `polaris/specs/planned/{parent-full-slug}/{timestamp}-{slug}.md`. Before writing, set up the group folder:
+
+1. If the parent is currently a flat `.md` file (not yet a group folder), migrate it so the parent and its children share the group folder:
+
+   ```bash
+   mkdir -p polaris/specs/{parent_status}/{parent-full-slug}
+   git mv polaris/specs/{parent_status}/{parent-full-slug}.md polaris/specs/{parent_status}/{parent-full-slug}/{parent-full-slug}.md
+   ```
+
+   (`{parent_status}` is `planned` or `in-progress` per Step 4. The `git mv` stages the rename; no separate `git add` for it later.)
+
+2. Ensure the child's group folder exists under `planned/`:
+
+   ```bash
+   mkdir -p polaris/specs/planned/{parent-full-slug}
+   ```
+
+(New Specs always land in `planned/` — flat or under a group folder. When the user starts implementation they move the file to `in-progress/` (or `in-progress/{parent-full-slug}/` for grouped Specs), and to `done/` or `canceled/` when finished. The directory IS the status, applied per-Spec.)
 
 Read the Spec template at `${CLAUDE_PLUGIN_ROOT}/templates/spec.md`. Fill it:
 - Frontmatter:
@@ -174,14 +224,16 @@ Read the Spec template at `${CLAUDE_PLUGIN_ROOT}/templates/spec.md`. Fill it:
 
 Write the file.
 
-## Step 9 — Create the branch
+## Step 10 — Create the branch
 
 Run:
 
 ```bash
 git checkout -b feat/{timestamp}
-git add polaris/specs/planned/{timestamp}-{slug}.md
+git add {child-spec-path}
 ```
+
+`{child-spec-path}` is the path determined in Step 9 — either `polaris/specs/planned/{timestamp}-{slug}.md` or `polaris/specs/planned/{parent-full-slug}/{timestamp}-{slug}.md`. If Step 9 ran a `git mv` to migrate a flat parent into a group folder, that rename is already staged from the `git mv` and does not need a separate `git add`.
 
 If Step 2a ran (a new Goal was created inline), also stage it:
 
@@ -197,13 +249,14 @@ git commit -m "spec: {slug}"
 
 (If a new Goal was created, the commit message is: `spec: {slug} (+goal: {goal-slug})`.)
 
-## Step 10 — Confirm
+## Step 11 — Confirm
 
 Tell the user:
 
-> Spec created: `polaris/specs/planned/{timestamp}-{slug}.md`
+> Spec created: `{child-spec-path}`
 > Parent Goal: `{goal-slug}`
+> Parent Spec: `{parent-full-slug or "none"}`
 > Branch: `feat/{timestamp}` (checked out)
 > Weak dimensions: `{list or "none"}`
 >
-> You can start implementing now. Claude Code will see the Spec via `CLAUDE.md` and stay scoped to it. When you begin implementation, move the file to `polaris/specs/in-progress/` (`git mv`). When merged or canceled, move to `done/` or `canceled/`.
+> You can start implementing now. Claude Code will see the Spec via `CLAUDE.md` and stay scoped to it. When you begin implementation, move the file to `in-progress/` via `git mv` (preserving any group folder, e.g., `polaris/specs/in-progress/{parent-full-slug}/{timestamp}-{slug}.md`). When merged or canceled, move to `done/` or `canceled/`.
